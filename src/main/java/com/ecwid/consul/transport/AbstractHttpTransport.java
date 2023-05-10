@@ -4,8 +4,11 @@ import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -20,8 +23,8 @@ public abstract class AbstractHttpTransport implements HttpTransport {
 
 	private static final Logger log = Logger.getLogger(AbstractHttpTransport.class.getName());
 
-	static final int DEFAULT_MAX_CONNECTIONS = 1000;
-	static final int DEFAULT_MAX_PER_ROUTE_CONNECTIONS = 500;
+	static final int DEFAULT_MAX_CONNECTIONS = 200;
+	static final int DEFAULT_MAX_PER_ROUTE_CONNECTIONS = 100;
 	static final int DEFAULT_CONNECTION_TIMEOUT = 10 * 1000; // 10 sec
 
 	// 10 minutes for read timeout due to blocking queries timeout
@@ -67,6 +70,7 @@ public abstract class AbstractHttpTransport implements HttpTransport {
 		logRequest(httpRequest);
 
 		try {
+			HttpContext context = new BasicHttpContext();
 			return getHttpClient().execute(httpRequest, response -> {
 				int statusCode = response.getStatusLine().getStatusCode();
 				String statusMessage = response.getStatusLine().getReasonPhrase();
@@ -78,7 +82,7 @@ public abstract class AbstractHttpTransport implements HttpTransport {
 				Long consulLastContact = parseUnsignedLong(response.getFirstHeader("X-Consul-Lastcontact"));
 
 				return new HttpResponse(statusCode, statusMessage, content, consulIndex, consulKnownLeader, consulLastContact);
-			});
+			}, context);
 		} catch (IOException e) {
 			throw new TransportException(e);
 		}

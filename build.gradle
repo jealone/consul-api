@@ -1,7 +1,7 @@
 apply plugin: "java"
 apply plugin: "idea"
 apply plugin: 'maven'
-apply plugin: 'signing'
+//apply plugin: 'signing'
 
 sourceCompatibility = 1.8
 
@@ -61,36 +61,36 @@ artifacts {
 
 def doUploadArchives = project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')
 if (doUploadArchives) {
-	group = "com.ecwid.consul"
+	group = "com.beeto.api.consul"
 	archivesBaseName = "consul-api"
-	version = "1.4.5"
+	version = "1.4.6"
 
-	signing {
-		sign configurations.archives
-	}
+	//signing {
+	//	sign configurations.archives
+	//}
 
 	uploadArchives {
 		repositories {
-			mavenDeployer {beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+			mavenDeployer {beforeDeployment { MavenDeployment deployment -> deployment }
 
-				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				repository(url: "http://maven.intra.weibo.com/nexus/content/repositories/releases") {
 					authentication(userName: sonatypeUsername, password: sonatypePassword)
 				}
 
-				snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+				snapshotRepository(url: "http://maven.intra.weibo.com/nexus/content/repositories/snapshots") {
 					authentication(userName: sonatypeUsername, password: sonatypePassword)
 				}
 
 				pom.project {
-					name 'Ecwid Consul API'
+					name 'Beeto Consul API'
 					packaging 'jar'
 					description 'Java client for Consul HTTP API (http://consul.io)'
-					url 'https://github.com/Ecwid/consul-api'
+					url 'https://github.com/jealone/consul-api'
 
 					scm {
-						connection 'scm:git:git@github.com:Ecwid/consul-api.git'
-						developerConnection 'scm:git:git@github.com:Ecwid/consul-api.git'
-						url 'https://github.com/Ecwid/consul-api.git'
+						connection 'scm:git:git@github.com:jealone/consul-api.git'
+						developerConnection 'scm:git:git@github.com:jealone/consul-api.git'
+						url 'https://github.com/jealone/consul-api.git'
 					}
 
 					licenses {
@@ -102,9 +102,9 @@ if (doUploadArchives) {
 
 					developers {
 						developer {
-							id 'vgv'
-							name 'Vasily Vasilkov'
-							email 'vgv@ecwid.com'
+							id 'AG'
+							name 'Arthur Guo'
+							email 'arthur.guo@mena.bee.to'
 						}
 					}
 				}
